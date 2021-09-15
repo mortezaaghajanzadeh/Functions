@@ -715,7 +715,41 @@ def OpenConnectWait():
     #         time.sleep(600)
 
 
-xc
+def mainCrawl(counter, stock_id, dates, Excepted_stock, number):
+    now = datetime.datetime.now()
+    holder = {}
+    print(
+        "Parsed stock count",
+        counter,
+        stock_id,
+        now.hour,
+        now.weekday(),
+        len(dates[stock_id]),
+        end="\n",
+        flush=True,
+    )  # printing number of stocks parsed
+    excepted_again = []
+    holder, excepted_again = get_stock_all_history(stock_id, dates[stock_id], number)
+    if excepted_again != []:
+        step = 0
+        while excepted_again != [] and step < 5:
+            step += 1
+            # print("step is ", step, stock_id, len(excepted_again), end="\r", flush=True)
+            holder2, excepted_again = get_stock_all_history(
+                stock_id, excepted_again, number
+            )
+            holder.update(holder2)
+            excepted_again = list(set(excepted_again) - set(holder.keys()))
+        if excepted_again != []:
+            # print(
+            #     "Excepted stock with id of %s " % stock_id,
+            #     len(excepted_again),
+            #     end="\r",
+            #     flush=True,
+            # )
+            Excepted_stock.append((stock_id, excepted_again))
+    # print(len(Excepted_stock), len(holder.keys()), end="\r", flush=True)
+    return holder, Excepted_stock
 
 
 def Main(counter, stock_id, dates, Excepted_stock, result, number):
